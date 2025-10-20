@@ -6,7 +6,7 @@ public class PlayerControler : MonoBehaviour
 {
     Transform T;
     Keyboard Current;
-    ForceMode ForceMode;
+    ForceMode _ForceMode;
 
     [Header("Jump")]
     // 接地判定を行う対象レイヤーマスク
@@ -27,6 +27,7 @@ public class PlayerControler : MonoBehaviour
 
     //Move
     private float Speed = 0.1f;
+    private float BackSpeed = 0.1f;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -34,10 +35,11 @@ public class PlayerControler : MonoBehaviour
     {
         T = transform;
         Current = Keyboard.current;
-        ForceMode = ForceMode.Impulse;
-
-        JumpF = new Vector3(0, 5, 0);
         _rb = GetComponent<Rigidbody>();
+
+        _ForceMode = ForceMode.Impulse;
+        JumpF = new Vector3(0, 5, 0);
+        
     }
 
     // Update is called once per frame
@@ -60,15 +62,15 @@ public class PlayerControler : MonoBehaviour
 
         if (Current.sKey.isPressed)
         {
-            T.position -= T.forward * Speed;
+            T.position -= T.forward * BackSpeed;    //後方にダッシュはしない
         }
 
-        if (Current.aKey.isPressed)
+        if (Current.dKey.isPressed)
         {
             T.position += T.right * Speed;
         }
 
-        if (Current.dKey.isPressed)
+        if (Current.aKey.isPressed)
         {
             T.position -= T.right * Speed;
         }
@@ -80,6 +82,12 @@ public class PlayerControler : MonoBehaviour
         }
 
         Ground();
+
+        //dash
+        if(Current.leftShiftKey.isPressed)
+        {
+            Speed = 0.15f;
+        }
     }
 
     //地面判定
@@ -91,7 +99,7 @@ public class PlayerControler : MonoBehaviour
         {
             if (Current.spaceKey./*押された瞬間*/wasPressedThisFrame)
             {
-                _rb.AddForce(JumpF, ForceMode.Impulse);
+                _rb.AddForce(JumpF, _ForceMode);
                 isJumping = true;
 
                 Debug.Log("jump");
@@ -118,5 +126,10 @@ public class PlayerControler : MonoBehaviour
         Debug.DrawRay(position, direction * distance, Color.red);
 
         return Physics.Raycast(ray, distance, groundLayers);
+    }
+
+    void Climb()
+    {
+        //if()
     }
 }
