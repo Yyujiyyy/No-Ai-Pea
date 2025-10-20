@@ -29,6 +29,12 @@ public class PlayerControler : MonoBehaviour
     private float Speed = 0.1f;
     private float BackSpeed = 0.1f;
 
+    //Climb
+    //[SerializeField] private Vector3 flontoffset = new Vector3.forward;
+    [SerializeField] LayerMask WallLayers = 0;
+    private float Walldistance = 0.3f;
+    private Vector3 JumpW;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -39,6 +45,7 @@ public class PlayerControler : MonoBehaviour
 
         _ForceMode = ForceMode.Impulse;
         JumpF = new Vector3(0, 5, 0);
+        JumpW = new Vector3(0, 3, 0);
         
     }
 
@@ -109,7 +116,7 @@ public class PlayerControler : MonoBehaviour
     }
     private void Ground()
     {
-        if (CheckGroundStatus())
+        if (CheckGroundStatus())        //Raycastは何かに当たったらtrueを返す
         {
             isJumping = false;
         }
@@ -130,6 +137,19 @@ public class PlayerControler : MonoBehaviour
 
     void Climb()
     {
-        //if()
+        if(CheckWallStatus())
+        {
+            _rb.AddForce(JumpW, _ForceMode);
+            //transform.position = カーソルを合わせた位置
+        }
+    }
+
+    public bool CheckWallStatus()
+    {
+        var direction = Vector3.forward;
+        position = transform.position + direction * 0.1f;
+        Ray ray = new Ray(position, direction);
+        Debug.DrawRay(position, direction * Walldistance, Color.green);
+        return Physics.Raycast(ray, Walldistance, WallLayers);
     }
 }
