@@ -1,8 +1,12 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 
 public class PlayerControler : MonoBehaviour
 {
     Transform T;
+    Keyboard Current;
+    ForceMode ForceMode;
 
     [Header("Jump")]
     // 接地判定を行う対象レイヤーマスク
@@ -19,14 +23,21 @@ public class PlayerControler : MonoBehaviour
     bool isJumping = false;
     [Tooltip("ジャンプの強さ")] Vector3 JumpF;
     Rigidbody _rb;
-
     [SerializeField] GameObject _foot;
+
+    //Move
+    private float Speed = 0.1f;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         T = transform;
+        Current = Keyboard.current;
+        ForceMode = ForceMode.Impulse;
+
+        JumpF = new Vector3(0, 5, 0);
+        _rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -42,28 +53,28 @@ public class PlayerControler : MonoBehaviour
     void PlayerMove()
     {
         //WASD移動
-        if (Input.GetKey(KeyCode.W))
+        if (Current.wKey.isPressed)
         {
-            T.position += T.forward;
+            T.position += T.forward * Speed;
         }
 
-        if (Input.GetKey(KeyCode.S))
+        if (Current.sKey.isPressed)
         {
-            T.position -= T.forward;
+            T.position -= T.forward * Speed;
         }
 
-        if (Input.GetKey(KeyCode.D))
+        if (Current.aKey.isPressed)
         {
-            T.position += T.right;
+            T.position += T.right * Speed;
         }
 
-        if (Input.GetKey(KeyCode.A))
+        if (Current.dKey.isPressed)
         {
-            T.position -= T.right;
+            T.position -= T.right * Speed;
         }
 
         //Jump
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Current.spaceKey.isPressed)
         {
             Jumping();
         }
@@ -78,7 +89,7 @@ public class PlayerControler : MonoBehaviour
         //Debug.Log(isJumping);
         if (!isJumping)
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Current.spaceKey./*押された瞬間*/wasPressedThisFrame)
             {
                 _rb.AddForce(JumpF, ForceMode.Impulse);
                 isJumping = true;
