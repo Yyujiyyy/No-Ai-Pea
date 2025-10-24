@@ -8,45 +8,64 @@ public class AngleControl : MonoBehaviour
     float MouseposX, MouseposY;
     float NextMouseX, NextMouseY;
     Vector2 PreviousMousePos;
-    float Sensitivity = 0.1f;
-    Vector3 Angle;
+    [SerializeField] float Sensitivity = 0.1f;
 
     public Vector3 Direction;
+
+    [SerializeField] GameObject Body;
+    [SerializeField] GameObject Camera;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         T = transform;
 
-        
+        Cursor.lockState = CursorLockMode.Locked;       //カーソルロックする
 
-        Cursor.visible = false;
-        
         PreviousMousePos = Mouse.current.position.ReadValue();
-        //Debug.Log(PreviousMousePos);
+
+        Debug.Log(PreviousMousePos);
     }
 
     // Update is called once per frame
     void Update()
     {
-        //Debug.Log(MouseposX + "    " + MouseposY);
+        Debug.Log(MouseposX + "    " + MouseposY);
+
         MousePosition();
 
-        Direction = T.eulerAngles.normalized;
+        Debug.Log(T.eulerAngles);
+
+        Direction = T.forward;          //現在の向きを取得
+
+        if (90 <= T.eulerAngles.x) //XをClamp
+        {//localEulerAnglesはQuaternion型なので変数を使わないといけない
+            var Clamp = T.eulerAngles;
+            Clamp.x = 90;
+            T.eulerAngles = Clamp;
+        }
+        else if (T.localEulerAngles.x <= -90)
+        {
+            var Clamp = T.eulerAngles;
+            Clamp.x = -90;
+            T.eulerAngles = Clamp;
+        }
+
+        //Camera.transform.position = T.position;
+        //Camera.transform.rotation = T.rotation;
+
+        PreviousMousePos = Mouse.current.position.ReadValue();
     }
 
-    Vector3 MousePosition()
+    void MousePosition()
     {
         NextMouseX = Mouse.current.position.ReadValue().x;
         NextMouseY = Mouse.current.position.ReadValue().y;
 
-        MouseposX = NextMouseX - PreviousMousePos.x;
-        MouseposY = NextMouseY - PreviousMousePos.y;
+        MouseposX = (NextMouseX - PreviousMousePos.x) * Sensitivity;
+        MouseposY = (NextMouseY - PreviousMousePos.y) * Sensitivity;
 
-        T.eulerAngles = new Vector3(MouseposX, MouseposY);      //計算結果を反映
-
-        Angle = T.eulerAngles * Sensitivity;                    //感度調節
-
-        return Angle;                                           //Angleを返す
+         T.Rotate(NextMouseX, NextMouseY, 0, Space.Self);      //計算結果を反映
+        //Space.Selfとは、今向いている方向に対して回転するという指定
     }
 }
