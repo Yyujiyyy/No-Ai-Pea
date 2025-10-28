@@ -46,7 +46,7 @@ public class PlayerControler : MonoBehaviour
         _ForceMode = ForceMode.Impulse;
         JumpF = new Vector3(0, 5, 0);
         JumpW = new Vector3(0, 3, 0);
-        
+
     }
 
     // Update is called once per frame
@@ -91,7 +91,7 @@ public class PlayerControler : MonoBehaviour
         Ground();
 
         //dash
-        if(Current.leftShiftKey.isPressed)
+        if (Current.leftShiftKey.isPressed)
         {
             Speed = 0.15f;
         }
@@ -137,7 +137,7 @@ public class PlayerControler : MonoBehaviour
 
     void Climb()
     {
-        if(CheckWallStatus())
+        if (CheckWallStatus())
         {
             _rb.AddForce(JumpW, _ForceMode);
             //transform.position = カーソルを合わせた位置
