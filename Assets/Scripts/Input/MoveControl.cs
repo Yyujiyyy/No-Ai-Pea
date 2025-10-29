@@ -51,6 +51,6 @@ public class MoveControl : MonoBehaviour
         Debug.Log(_moveInputValue);
         _rigidbody.AddForce(new Vector3(_moveInputValue.x * 10, 0, _moveInputValue.y * 10));
         //transform.positionに変える
-        _tr.position += new Vector3(_moveInputValue.x * 10, 0, _moveInputValue.y);
+        _tr.position += new Vector3(_moveInputValue.x * 0.1f, 0, _moveInputValue.y * 0.1f);
     }
 }
