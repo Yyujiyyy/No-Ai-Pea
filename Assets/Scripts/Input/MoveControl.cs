@@ -9,7 +9,7 @@ public class MoveControl : MonoBehaviour
     [SerializeField] private float _speed = 5;
     [SerializeField] private float _jumpForce = 5;
 
-    private InputSystem_Actions _InputSystem;
+    private InputSystem_Actions _inputSystem;
     private Rigidbody _rigidbody;
     private Vector2 _moveInputValue;
     private Transform _tr;
@@ -18,22 +18,22 @@ public class MoveControl : MonoBehaviour
     {
         //インスタンス化
         _rigidbody = GetComponent<Rigidbody>();
-        _InputSystem = new InputSystem_Actions();
+        _inputSystem = new InputSystem_Actions();
         _tr = transform;
 
         // Actionイベント登録
-        _InputSystem.Player.Move.started += OnMove;
-        _InputSystem.Player.Move.performed += OnMove;
-        _InputSystem.Player.Move.canceled += OnMove;
-        _InputSystem.Player.Jump.performed += OnJump;
+        _inputSystem.Player.Move.started += OnMove;
+        _inputSystem.Player.Move.performed += OnMove;
+        _inputSystem.Player.Move.canceled += OnMove;
+        _inputSystem.Player.Jump.performed += OnJump;
 
         // Input Actionを機能させるためには有効化する必要がある
-        _InputSystem.Enable();
+        _inputSystem.Enable();
     }
 
     private void OnDestroy()
     {   //イベント情報を廃棄する
-        _InputSystem.Dispose(); 
+        _inputSystem.Dispose(); 
     }
 
     private void OnMove(InputAction.CallbackContext context)
