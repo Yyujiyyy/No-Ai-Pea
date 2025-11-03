@@ -537,8 +537,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 749117839}
-  - component: {fileID: 749117840}
   - component: {fileID: 749117841}
+  - component: {fileID: 749117842}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -563,27 +563,6 @@ Transform:
   - {fileID: 1906775766}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &749117840
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 749117838}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 98c697e5429a049488af4d58ae632d64, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerControler
-  groundLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  offset: {x: 0, y: 0.1, z: 0}
-  distance: 0.35
-  _foot: {fileID: 2128340913}
-  WallLayers:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!54 &749117841
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -611,6 +590,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &749117842
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 749117838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 911e04bc857117842bb62d22ff8a9fa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MoveControl
+  _speed: 5
+  _jumpForce: 5
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -783,7 +776,6 @@ GameObject:
   - component: {fileID: 1678968739}
   - component: {fileID: 1678968738}
   - component: {fileID: 1678968737}
-  - component: {fileID: 1678968741}
   m_Layer: 0
   m_Name: Head
   m_TagString: Untagged
@@ -883,18 +875,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 749117839}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1678968741
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1678968736}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 195023c58eaa4cd438dfa3c2716fb5cf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AngleControl
 --- !u!1 &1906775765
 GameObject:
   m_ObjectHideFlags: 0
