@@ -49,7 +49,7 @@ public class MoveControl : MonoBehaviour
     private void Update()
     {
         //Debug.Log(_moveInputValue);
-        _rigidbody.AddForce(new Vector3(_moveInputValue.x * 10, 0, _moveInputValue.y * 10));
+        //_rigidbody.AddForce(new Vector3(_moveInputValue.x * 10, 0, _moveInputValue.y * 10));
         //transform.positionに変えた
         _tr.position += new Vector3(_moveInputValue.x * 0.1f, 0, _moveInputValue.y * 0.1f);
     }
