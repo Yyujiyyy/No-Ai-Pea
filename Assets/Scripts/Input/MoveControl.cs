@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody))]
 public class MoveControl : MonoBehaviour
 {
-    [SerializeField] private float _speed = 5;
+    [SerializeField] private float _speed = 3;
     [SerializeField] private float _jumpForce = 5;
 
     private InputSystem_Actions _inputSystem;
@@ -48,9 +48,9 @@ public class MoveControl : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(_moveInputValue);
+        //Debug.Log(_moveInputValue);
         _rigidbody.AddForce(new Vector3(_moveInputValue.x * 10, 0, _moveInputValue.y * 10));
-        //transform.positionに変える
+        //transform.positionに変えた
         _tr.position += new Vector3(_moveInputValue.x * 0.1f, 0, _moveInputValue.y * 0.1f);
     }
 }
