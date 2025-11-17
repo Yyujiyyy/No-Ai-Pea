@@ -6,7 +6,7 @@ public class AngleControler : MonoBehaviour
     Transform _tr;
 
     private InputSystem_Actions _inputSystem;
-    private Vector2 _mouseDifference;
+    private Vector2 _mousePos;
 
     [SerializeField,Range(0,1)]private float _sensitivity;
     public float X; 
@@ -15,6 +15,8 @@ public class AngleControler : MonoBehaviour
     public float premouseY;
 
     public float Qx, Qy, Qz;
+
+    float yaw, pitch;
 
     private void Awake()
     {
@@ -36,27 +38,28 @@ public class AngleControler : MonoBehaviour
 
     private void OnLook(InputAction.CallbackContext context)
     {
-        _mouseDifference += context.ReadValue<Vector2>();
+        _mousePos = context.ReadValue<Vector2>();
     }
     
     private void Update()
     {
-        Qx = _mouseDifference.x;
-        Qy = _mouseDifference.y;
+        yaw += _mousePos.x * _sensitivity;
+        //-=    上を向く＝角度をマイナスにする
+        pitch -= _mousePos.y * _sensitivity;
 
-        Debug.Log(_mouseDifference);
+        Debug.Log(_mousePos);
 
-        if (Qx <= -90)
+        if (pitch <= -90)
         {
-            Qx = -90;
+            pitch = -90;
         }
-        else if (90 <= Qx)
+        else if (90 <= pitch)
         {
-            Qx = 90;
+            pitch = 90;
         }
 
         //x,yは逆
-        this._tr.rotation = Quaternion.Euler(Qy, Qx, _tr.rotation.z);
+        this._tr.rotation = Quaternion.Euler(pitch, yaw, 0);
         //eulerAnglesで+=してしまうとジンバルロックが起こり想定した挙動と異なってしまう
     }
 }
