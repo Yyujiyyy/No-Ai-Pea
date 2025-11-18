@@ -47,7 +47,7 @@ public class AngleControler : MonoBehaviour
         //-=    上を向く＝角度をマイナスにする
         pitch -= _mousePos.y * _sensitivity;
 
-        Debug.Log(_mousePos);
+        //Debug.Log(_mousePos);
 
         if (pitch <= -90)
         {
