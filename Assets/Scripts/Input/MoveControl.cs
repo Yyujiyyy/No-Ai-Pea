@@ -26,7 +26,7 @@ public class MoveControl : MonoBehaviour
     [Header("移動関連")]
     private Vector3 _movedir;
     private Vector3 _w, _a, _s, _d;
-    Camera _camera;
+    public static Camera _camera;
 
     private void Awake()
     {
@@ -40,6 +40,13 @@ public class MoveControl : MonoBehaviour
         _inputSystem.Player.Move.performed += OnMove;
         _inputSystem.Player.Move.canceled += OnMove;
         _inputSystem.Player.Jump.performed += OnJump;
+
+        _inputSystem.Player.Crouch.started += OnCrouch;
+        _inputSystem.Player.Crouch.performed += OnCrouch;
+        _inputSystem.Player.Crouch.canceled += OnCrouch;
+        _inputSystem.Player.Sprint.started += OnSprint;
+        _inputSystem.Player.Sprint.performed += OnSprint;
+        _inputSystem.Player.Sprint.canceled += OnSprint;
         
         // Input Actionを機能させるためには有効化する必要がある
         _inputSystem.Enable();
@@ -51,8 +58,8 @@ public class MoveControl : MonoBehaviour
         _camera = Camera.main;
 
         _w = _camera.transform.forward;
-        _s = - _camera.transform.forward;
-        _a = - _camera.transform.right;
+        _s = _camera.transform.forward;
+        _a = _camera.transform.right;
         _d = _camera.transform.right;
     }
 
@@ -78,9 +85,22 @@ public class MoveControl : MonoBehaviour
         }
     }
 
+    private void OnCrouch(InputAction.CallbackContext context)
+    {
+
+    }
+
+    private void OnSprint(InputAction.CallbackContext context)
+    {
+        _speed *= 2;
+    }
+
     private void Update()
     {
         MoveOfPlayer();
+        //移動キーで上下に動かないようにする
+        _movedir.y = 0;
+        this._tr.position += _movedir * _speed;
 
         JumpJudge();
 
@@ -122,8 +142,6 @@ public class MoveControl : MonoBehaviour
                 _movedir += _w;
                 break;
         }
-
-        _tr.position += _movedir *_speed;
     }
 
     /// <summary>
