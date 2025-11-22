@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using Unity.VisualScripting;
+using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 public class AngleControler : MonoBehaviour
 {
@@ -9,14 +11,15 @@ public class AngleControler : MonoBehaviour
     private Vector2 _mousePos;
 
     [SerializeField,Range(0,1)]private float _sensitivity;
-    public float X; 
-    public float Y;
-    public float premouseX; 
-    public float premouseY;
-
-    public float Qx, Qy, Qz;
-
     float yaw, pitch;
+
+    // 壁判定を行う対象レイヤーマスク
+    [SerializeField, Header("Climb関連")] LayerMask wallLayers = 0;
+    // 原点から見たRayの始点弄るためのoffset
+    [SerializeField] Vector3 offset = new Vector3(0, 0.1f, 0f);
+    private Vector3 direction, position;
+    // Rayの長さ
+    [SerializeField] float distance = 0.2f;
 
     private void Awake()
     {
@@ -29,6 +32,11 @@ public class AngleControler : MonoBehaviour
 
         //有効化
         _inputSystem.Enable();
+    }
+
+    private void Start()
+    {
+        this._tr.rotation = Quaternion.identity;
     }
 
     private void OnDestroy()
@@ -57,9 +65,27 @@ public class AngleControler : MonoBehaviour
         {
             pitch = 90;
         }
-
+        
         //x,yは逆
         this._tr.rotation = Quaternion.Euler(pitch, yaw, 0);
         //eulerAnglesで+=してしまうとジンバルロックが起こり想定した挙動と異なってしまう
+    }
+
+    public bool CheckWallStatus()
+    {
+        direction = MoveControl._camera.transform.forward;
+        position = transform.position + offset;
+        Ray ray = new Ray(position, direction);
+        Debug.DrawRay(position, direction * distance, Color.red);
+
+        return Physics.Raycast(ray, distance, wallLayers);
+    }
+
+    private void Climb()
+    {
+        if(CheckWallStatus())
+        {
+            
+        }
     }
 }
