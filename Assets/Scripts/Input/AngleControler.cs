@@ -16,10 +16,10 @@ public class AngleControler : MonoBehaviour
     // 壁判定を行う対象レイヤーマスク
     [SerializeField, Header("Climb関連")] LayerMask wallLayers = 0;
     // 原点から見たRayの始点弄るためのoffset
-    [SerializeField] Vector3 offset = new Vector3(0, 0.1f, 0f);
+    [SerializeField] Vector3 offset = new Vector3(0, 0f, 1f);
     private Vector3 direction, position;
     // Rayの長さ
-    [SerializeField] float distance = 0.2f;
+    [SerializeField] float distance = 2f;
 
     private void Awake()
     {
@@ -71,21 +71,26 @@ public class AngleControler : MonoBehaviour
         //eulerAnglesで+=してしまうとジンバルロックが起こり想定した挙動と異なってしまう
     }
 
+    Ray ray;
+    RaycastHit _raycastHit;
+
+    /// <summary>
+    /// 目の前に壁があるかどうかを判定
+    /// </summary>
+    /// <returns></returns>
     public bool CheckWallStatus()
     {
         direction = MoveControl._camera.transform.forward;
         position = transform.position + offset;
-        Ray ray = new Ray(position, direction);
+        ray = new Ray(position, direction);
         Debug.DrawRay(position, direction * distance, Color.red);
 
         return Physics.Raycast(ray, distance, wallLayers);
     }
 
-    private void Climb()
+     public RaycastHit WhereWallCheck()
     {
-        if(CheckWallStatus())
-        {
-            
-        }
+        Physics.Raycast(ray, out _raycastHit, distance);
+        return _raycastHit;
     }
 }
