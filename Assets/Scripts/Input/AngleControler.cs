@@ -1,7 +1,5 @@
-﻿using Unity.VisualScripting;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
 
 public class AngleControler : MonoBehaviour
 {
@@ -69,6 +67,11 @@ public class AngleControler : MonoBehaviour
         //x,yは逆
         this._tr.rotation = Quaternion.Euler(pitch, yaw, 0);
         //eulerAnglesで+=してしまうとジンバルロックが起こり想定した挙動と異なってしまう
+
+        direction = MoveControl._camera.transform.forward;
+        // headの中心から
+        position = transform.position + offset;
+        ray = new Ray(position, direction);
     }
 
     Ray ray;
@@ -80,17 +83,26 @@ public class AngleControler : MonoBehaviour
     /// <returns></returns>
     public bool CheckWallStatus()
     {
-        direction = MoveControl._camera.transform.forward;
-        position = transform.position + offset;
-        ray = new Ray(position, direction);
         Debug.DrawRay(position, direction * distance, Color.red);
+        Debug.Log("hey");
 
         return Physics.Raycast(ray, distance, wallLayers);
     }
 
+    /// <summary>
+    /// 目の前にある壁の情報を取得
+    /// </summary>
+    /// <returns>
+    /// </returns>
      public RaycastHit WhereWallCheck()
     {
-        Physics.Raycast(ray, out _raycastHit, distance);
-        return _raycastHit;
+        Debug.Log("who");
+        Physics.Raycast(ray, out RaycastHit hitInfo, distance);
+        return hitInfo;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawRay(ray);
     }
 }
