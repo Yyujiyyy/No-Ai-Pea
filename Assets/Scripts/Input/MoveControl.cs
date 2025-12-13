@@ -6,7 +6,6 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody))]
 public class MoveControl : MonoBehaviour
 {
-    [SerializeField] private float _speed = 0.1f;
     [SerializeField] private float _jumpForce = 5;
 
     private InputSystem_Actions _inputSystem;
@@ -22,11 +21,18 @@ public class MoveControl : MonoBehaviour
     // Rayの長さ
     [SerializeField] float distance = 0.35f;
     bool isJumping;
-
-    [Header("移動関連")]
+    
+    [SerializeField,Header("移動関連")]
     private Vector3 _movedir;
     private Vector3 _w, _a, _s, _d;
     public static Camera _camera;
+    [SerializeField] GameObject _playerHead;
+    private float _speed = 0.05f;
+
+    private bool _onWall;
+    RaycastHit _frontWall;
+
+    [SerializeField] AngleControler _angleControler;
 
     private void Awake()
     {
@@ -36,18 +42,25 @@ public class MoveControl : MonoBehaviour
         _tr = transform;
 
         // Actionイベント登録
+        //移動
         _inputSystem.Player.Move.started += OnMove;
         _inputSystem.Player.Move.performed += OnMove;
         _inputSystem.Player.Move.canceled += OnMove;
+        //ジャンプ
         _inputSystem.Player.Jump.performed += OnJump;
-
+        //しゃがみ
         _inputSystem.Player.Crouch.started += OnCrouch;
         _inputSystem.Player.Crouch.performed += OnCrouch;
         _inputSystem.Player.Crouch.canceled += OnCrouch;
+        //ダッシュ
         _inputSystem.Player.Sprint.started += OnSprint;
         _inputSystem.Player.Sprint.performed += OnSprint;
         _inputSystem.Player.Sprint.canceled += OnSprint;
-        
+        //つかみ
+        _inputSystem.Player.Attack.started += OnGrab;
+        _inputSystem.Player.Attack.performed += OnGrab;
+        _inputSystem.Player.Attack.canceled += OnGrab;
+
         // Input Actionを機能させるためには有効化する必要がある
         _inputSystem.Enable();
 
@@ -57,10 +70,13 @@ public class MoveControl : MonoBehaviour
         //カメラ関連
         _camera = Camera.main;
 
-        _w = _camera.transform.forward;
-        _s = _camera.transform.forward;
-        _a = _camera.transform.right;
-        _d = _camera.transform.right;
+        _w = _playerHead.transform.forward;
+        _s = _playerHead.transform.forward;
+        _a = _playerHead.transform.right;
+        _d = _playerHead.transform.right;
+
+        //Climb
+        _onWall = false;
     }
 
     private void OnDestroy()
@@ -92,19 +108,45 @@ public class MoveControl : MonoBehaviour
 
     private void OnSprint(InputAction.CallbackContext context)
     {
-        _speed *= 2;
+        if(context.started)
+            _speed = 0.1f;
+        else if(context.canceled)
+            _speed = 0.05f;
+        
+    }
+
+    /// <summary>
+    /// 始点の目の前に壁があるかつ左クリックをしている間登る
+    /// </summary>
+    /// <param name="context"></param>
+    private void OnGrab(InputAction.CallbackContext context)
+    {
+        if(_onWall)
+            _angleControler.WhereWallCheck();
     }
 
     private void Update()
     {
+        if (_angleControler.CheckWallStatus())
+        {
+            //壁をつかむ
+            _onWall = true;
+        }
+        else
+        {
+            _onWall = false;
+        }
+
         MoveOfPlayer();
         //移動キーで上下に動かないようにする
         _movedir.y = 0;
         this._tr.position += _movedir * _speed;
 
         JumpJudge();
-
         //Debug.Log(_moveInputValue);
+
+        if (_onWall)
+            Debug.Log("hai");
     }
 
     /// <summary>
@@ -112,35 +154,59 @@ public class MoveControl : MonoBehaviour
     /// </summary>
     void MoveOfPlayer()
     {   //カメラの方向取得
-        _w = _camera.transform.forward;
-        _s = _camera.transform.forward;
-        _a = _camera.transform.right;
-        _d = _camera.transform.right;
+        _w = _playerHead.transform.forward;
+        _s = _playerHead.transform.forward;
+        _a = _playerHead.transform.right;
+        _d = _playerHead.transform.right;
         
         //初期化
         _movedir = Vector3.zero;
 
-        switch (_moveInputValue.x)
-        {   //-0.5以下
-            case <= -0.5f:
-                _movedir -= _d;
-                break;
-            //0.5以上
-            case >= 0.5f:
-                _movedir += _a;
-                break;
-        }
-
-        switch (_moveInputValue.y)
+        //登り
+        if(_onWall)
         {
-            //-0.5以下
-            case <= -0.5f:
-                _movedir -= _s;
-                break;
-            //0.5以上
-            case >= 0.5f:
-                _movedir += _w;
-                break;
+            //重力をオフ
+            _rigidbody.useGravity = false;
+            //目の前にある壁の情報を取得
+            _frontWall = _angleControler.WhereWallCheck();
+            //取得した壁に沿って垂直に移動する
+            _w = _frontWall.transform.up;
+            _s = -_frontWall.transform.up;
+            _a = _frontWall.transform.right;
+            _d = -_frontWall.transform.right;
+
+            WASD();
+        }
+        //地上
+        if (!_onWall)
+        {
+            WASD();
+        }
+        //0.7より小さい数字じゃないとダメ
+        void WASD()
+        {
+            switch (_moveInputValue.x)
+            {   //-0.5以下
+                case <= -0.5f:
+                    _movedir -= _d;
+                    break;
+                //0.5以上
+                case >= 0.5f:
+                    _movedir += _a;
+                    break;
+            }
+
+            switch (_moveInputValue.y)
+            {
+                //-0.5以下
+                case <= -0.5f:
+                    _movedir -= _s;
+                    break;
+                //0.5以上
+                case >= 0.5f:
+                    _movedir += _w;
+                    break;
+            }
         }
     }
 
